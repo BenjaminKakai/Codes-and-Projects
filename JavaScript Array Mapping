@@ -1,0 +1,9 @@
+<html>
+<body>
+
+<h2>JavaScript Array.map()</h2>
+<p>Creates a new array by performing a function on each array element.</p>
+
+<p id="demo"></p>
+
+<script>
