@@ -1,0 +1,21 @@
+<!doctype HTML>
+<html>
+
+<body>
+
+    <div>
+        <p id="p1">This is a paragraph.</p>
+        <p id="p2">This is another paragraph.</p>
+    </div>
+
+    <button onclick="myFunction()">Remove Element</button>
+
+    <script>
+        function myFunction() {
+            document.getElementById("p1").remove();
+        }
+    </script>
+
+</body>
+
+</html>
