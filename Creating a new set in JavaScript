@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+<body>
+
+<h2>JavaScript Set Objects</h2>
+
+<p>Create a new Set:</p>
+
+<p id="demo"></p>
+
+<script>
+//Create some variables
+const a = "a";
+const b = "b";
+const c = "c";
+
+//Create a Set
+const letters = new Set();
+
+// Add the variables to the Set
+letters.add(a);
+letters.add(b);
+letters.add(c);
+
+// Display set.size
+document.getElementById("demo").innerHTML = letters.size;
+</script>
+
+</body>
+<html>
