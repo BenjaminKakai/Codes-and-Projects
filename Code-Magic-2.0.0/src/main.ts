@@ -1,0 +1,296 @@
+// Generator Modules
+import {picTextGenerator} from './pages/pic-text';
+import {gradientTextGenerator} from './pages/gradient-text';
+import {gradientBorderGenerator} from './pages/gradient-border';
+import {gradientBackgroundGenerator} from './pages/gradient-background';
+import {animationGenerator} from './pages/animation';
+
+// import * as FilePond from 'filepond';
+import * as FilePond from 'filepond';
+import 'filepond/dist/filepond.min.css';
+
+// File Pond Plugins
+import FilePondPluginImagePreview from 'filepond-plugin-image-preview';
+import FilePondPluginImageResize from 'filepond-plugin-image-resize';
+import FilePondPluginImageTransform from 'filepond-plugin-image-transform';
+
+import 'filepond-plugin-image-preview/dist/filepond-plugin-image-preview.css';
+
+FilePond.registerPlugin(
+  FilePondPluginImagePreview,
+  FilePondPluginImageResize,
+  FilePondPluginImageTransform
+);
+
+/**
+ * All Variables
+ */
+let attributeValue: string | null = null;
+let imageSRC = '';
+const sideBarSlide = [{left: '100%'}, {left: '0%'}];
+
+const sideBarTiming = {
+  duration: 500,
+  iterations: 1,
+  easing: 'ease-in',
+};
+
+// Elements
+const generators = document.querySelectorAll('[data-gen]');
+const sidebar = <HTMLElement>document.querySelector('.side-results');
+const getResults = document.querySelectorAll('[data-button]');
+const results = document.querySelectorAll('[data-result]');
+const closeBar = document.getElementById('close-side-bar');
+const getImageEntryElement = <HTMLInputElement>(
+  document.getElementById(`pic-text-file`)
+);
+const navBar = document.querySelector('#nav');
+const menuIcon = document.querySelector('#menu-icon');
+
+//gradient text color elements
+const gradientTextInputs = document.querySelectorAll('.gradient-text-inputs');
+const textPreview = <HTMLElement>(
+  document.querySelector('#gradient-text-color-preview')
+);
+const gradientTextColor1 = <HTMLInputElement>(
+  document.querySelector('#gradient-text-color1')
+);
+const gradientTextColor2 = <HTMLInputElement>(
+  document.querySelector('#gradient-text-color2')
+);
+const gradientTextDegree = <HTMLInputElement>(
+  document.querySelector('#gradient-text-degree')
+);
+
+//gradient border color element
+const gradientBorderInputs = document.querySelectorAll(
+  '.gradient-border-inputs'
+);
+const borderPreview = <HTMLElement>(
+  document.querySelector('#gradient-border-color-preview')
+);
+const gradientBorderColor1 = <HTMLInputElement>(
+  document.querySelector('#gradient-border-color1')
+);
+const gradientBorderColor2 = <HTMLInputElement>(
+  document.querySelector('#gradient-border-color2')
+);
+const gradientBorderDegree = <HTMLInputElement>(
+  document.querySelector('#gradient-border-degree')
+);
+
+//gradient background color elements
+const gradientBackgroundInputs = document.querySelectorAll(
+  '.gradient-background-inputs'
+);
+const backgroundPreview = <HTMLElement>(
+  document.querySelector('#gradient-background-color-preview')
+);
+const gradientBackgroundColor1 = <HTMLInputElement>(
+  document.querySelector('#gradient-background-color1')
+);
+const gradientBackgroundColor2 = <HTMLInputElement>(
+  document.querySelector('#gradient-background-color2')
+);
+const gradientBackgroundDegree = <HTMLInputElement>(
+  document.querySelector('#gradient-background-degree')
+);
+
+menuIcon?.addEventListener('click', () => {
+  if (navBar?.classList.contains('closed-nav')) {
+    navBar?.classList.remove('closed-nav');
+    menuIcon?.setAttribute('icon', 'ci:close-big');
+  } else {
+    navBar?.classList.add('closed-nav');
+    menuIcon?.setAttribute('icon', 'dashicons:menu-alt');
+  }
+});
+
+for (let i = 0; i < generators.length; i++) {
+  generators[i].addEventListener('click', () => {
+    navBar?.classList.add('closed-nav');
+    menuIcon?.setAttribute('icon', 'dashicons:menu-alt');
+  });
+}
+
+FilePond.create(getImageEntryElement, {
+  imagePreviewMaxHeight: 200,
+
+  onpreparefile: (fileItem, output): void => {
+    // create a new image object
+    const img = new Image();
+
+    // set the image source to the output of the Image Transform plugin
+    img.src = URL.createObjectURL(output);
+    imageSRC = img.src;
+    console.log(fileItem);
+  },
+});
+
+/**
+ * All types
+ */
+type Display = 'grid' | 'flex' | 'none';
+
+/**
+ * sets which generator to call
+ *
+ * @param attribute - The attribute name of the generator element
+ */
+function generatorsFunction(attribute: string): void {
+  switch (attribute) {
+    case 'pic-text':
+      picTextGenerator(imageSRC);
+      break;
+    case 'gradient-text':
+      gradientTextGenerator();
+      break;
+    case 'gradient-border':
+      gradientBorderGenerator();
+      break;
+    case 'gradient-background':
+      gradientBackgroundGenerator();
+      break;
+    case 'animation':
+      animationGenerator();
+      break;
+  }
+}
+
+/**
+ * use to toggle visibilty of content in generators
+ *
+ * @param attribute  The attribute name of the generator element
+ * @param display  display type
+ */
+function showContent(attribute: string, display: Display): void {
+  const generators = document.querySelectorAll(`[data-content]`);
+  const generatorsNav = document.querySelectorAll(`[data-gen]`);
+  const showGen = <HTMLElement>(
+    document.querySelector(`[data-content=${attribute}]`)
+  );
+  const highLightGen = <HTMLElement>(
+    document.querySelector(`[data-gen=${attribute}]`)
+  );
+
+  generators.forEach((item) => {
+    const element = <HTMLElement>item;
+    element.style.display = 'none';
+  });
+  generatorsNav.forEach((item) => {
+    const generatorNav = <HTMLElement>item;
+    generatorNav.style.border = 'none';
+    generatorNav.style.background = 'none';
+  });
+
+  showGen.style.display = `${display}`;
+  highLightGen.style.background = `linear-gradient(80deg,var(--primary-color), var(--secondary-color))`;
+  highLightGen.style.border = '1px solid var(--tertiary-color)';
+}
+
+function showResult(attribute: string | null) {
+  results.forEach((item) => {
+    const element = <HTMLElement>item;
+    if (element.getAttribute('data-result') === attribute) {
+      element.style.display = 'flex';
+    } else {
+      element.style.display = 'none';
+    }
+  });
+  if (attribute === null) return;
+  generatorsFunction(attribute);
+}
+
+// function fixPicTextFile() {
+//   const getImageEntryElement = <HTMLInputElement>(
+//     document.getElementById(`pic-text-file`)
+//   );
+//   getImageEntryElement.setAttribute('value', '');
+//   getImageEntryElement.setAttribute('src', '');
+//   FilePond.destroy(getImageEntryElement);
+
+//   if (attributeValue === null) return;
+//   removeOrAddGeneratorContent(attributeValue, 'none');
+// }
+
+// add event listener to generator icons
+
+generators.forEach((generator) => {
+  generator?.addEventListener('click', (): void => {
+    sidebar.style.left = '100%';
+    const checking = generator.getAttribute('data-gen');
+    if (checking === 'gradient-border') {
+      generatorsFunction(checking);
+    } else if (checking === null) {
+      return;
+    }
+
+    attributeValue = checking;
+    showContent(attributeValue, 'flex');
+  });
+});
+
+getResults.forEach((getResult) => {
+  getResult?.addEventListener('click', () => {
+    showResult(getResult.getAttribute('data-button'));
+    sidebar.animate(sideBarSlide, sideBarTiming);
+    sidebar.style.left = '0%';
+  });
+});
+showResult(null);
+
+// onClick event listener for the closebar icon
+closeBar?.addEventListener('click', () => {
+  const sideBarSlide = [{left: '0%'}, {left: '100%'}];
+  sidebar.animate(sideBarSlide, sideBarTiming);
+  sidebar.style.left = '100%';
+  showResult(null);
+});
+
+for (let i = 0; i < gradientBackgroundInputs.length; i++) {
+  gradientBackgroundInputs[i].addEventListener('input', () =>
+    createGradientPreview(
+      gradientBackgroundColor1,
+      gradientBackgroundColor2,
+      gradientBackgroundDegree,
+      backgroundPreview
+    )
+  );
+}
+
+//set gradient border preview
+for (let i = 0; i < gradientBorderInputs.length; i++) {
+  gradientBorderInputs[i].addEventListener('input', () =>
+    createGradientPreview(
+      gradientBorderColor1,
+      gradientBorderColor2,
+      gradientBorderDegree,
+      borderPreview
+    )
+  );
+}
+
+//set gradient text preview
+for (let i = 0; i < gradientTextInputs.length; i++) {
+  gradientTextInputs[i].addEventListener('input', () =>
+    createGradientPreview(
+      gradientTextColor1,
+      gradientTextColor2,
+      gradientTextDegree,
+      textPreview
+    )
+  );
+}
+
+//create gradient preview
+const createGradientPreview = (
+  color1: HTMLInputElement,
+  color2: HTMLInputElement,
+  range: HTMLInputElement,
+  preview: HTMLElement
+) => {
+  const colorFrom = color1?.value;
+  const colorTo = color2?.value;
+  const fill = range?.value;
+  preview.style.background = `linear-gradient(${fill}deg, ${colorFrom}, ${colorTo})`;
+};
